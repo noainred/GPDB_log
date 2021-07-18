@@ -23,9 +23,9 @@ dev_name = "JunHoui-MacBookPro.local"
 database = 'greenplum'
 ############################
 
-if "MAC" in dev_name:
-    options_read_dir    = '/Users/junho/Downloads/parsing/data/'
-    options_write_dir   = '/Users/junho/Downloads/parsing/'
+if "Mac" in dev_name:
+    options_read_dir    = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01/'
+    options_write_dir   = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01-result/'
 
 # elif "dev_machine" in dev_name: # 다른 개발 장비 처리하기 위한 Case
 #     options_read_dir = '/Users/junho/Downloads/parsing/data/'

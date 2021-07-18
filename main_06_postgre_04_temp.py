@@ -26,9 +26,9 @@ dev_options_read_dir    = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test
 dev_options_write_dir   = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01-result/'
 ### Dev mode ### Greenplum ###
 database                = 'greenplum'
-greenplum_hostname      = "localhost"
+greenplum_hostname      = "172.16.198.4"
 greenplum_port_no       = "5432"
-greenplum_user_name     = "gpadmin"
+greenplum_user_name     = "postgres"
 greenplum_user_pass     = "pivotal"
 greenplum_database_name = 'infralogdb'
 greenplum_schemanameNo1 = "enko"
@@ -79,11 +79,11 @@ else:
     sys.exit()
 
 
-def make_greenplum_database():
+def make_greenplum_schema():
     if 'greenplum' in database:
         try:
             curs = greenplumdb.cursor()
-            sql = "CREATE SCHEMA  " + greenplum_database_name + ";"
+            sql = "CREATE SCHEMA  " + greenplum_database_name + "." + greenplum_schemanameNo1 + ";"
             curs.execute(sql)
             greenplumdb.commit()
         except:
@@ -95,9 +95,9 @@ def make_greenplum_database():
         mariadb.commit()
 
 
-def make_greenplum_schema(yearmonth):
+def make_greenplum_schema_table(yearmonth):
     try:
-        tablename = str("infralogdb.schemainfralogdb" + '.' + project + '_' + str(yearmonth))
+        tablename = str( greenplum_schemanameNo1 + '.' + project + '_' + str(yearmonth))
         curs = greenplumdb.cursor()
         sql = """ 
             CREATE TABLE IF NOT EXISTS """ + str(tablename) + """ (
@@ -153,30 +153,6 @@ def incloud_x(readdata):
         print(readdata)
     return str(round(int(returndata)))
 
-def insert_mariadb():
-    curs = mariadb.cursor()
-    tablename = "gpdb_infra_mon." + str(yearmonth)
-    sql = """insert into """ + tablename + """(field_name, field_date, field_time, 
-                    field_cpu_usr, field_cpu_sys, field_cpu_idle, field_cpu_wai, field_cpu_hiq, field_cpu_siq,
-                    field_dsk_read, field_dsk_writ,
-                    field_net_recv, field_net_send,
-                    field_memory_used, field_memory_buff, field_memory_cach, field_memory_free) 
-            values (%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) 
-            ON DUPLICATE KEY UPDATE 
-                        field_name=%s, field_date=%s,field_time=%s,field_cpu_usr=%s,field_cpu_sys=%s,field_cpu_idle=%s,field_cpu_wai=%s,field_cpu_hiq=%s,field_cpu_siq=%s,field_dsk_read=%s,field_dsk_writ=%s,field_net_recv=%s,
-                        field_memory_used=%s,field_memory_buff=%s,field_memory_buff=%s,field_memory_cach=%s,field_memory_free=%s """
-    curs.execute(sql, (field_name, field_date, field_time, \
-                    field_cpu_usr, field_cpu_sys, field_cpu_idle, field_cpu_wai, field_cpu_hiq, field_cpu_siq,\
-                    field_dsk_read, field_dsk_writ, \
-                    field_net_recv, field_net_send, \
-                    field_memory_used, field_memory_buff, field_memory_cach, field_memory_free, \
-                    field_name, field_date, field_time, \
-                    field_cpu_usr, field_cpu_sys, field_cpu_idle, field_cpu_wai, field_cpu_hiq, field_cpu_siq,\
-                    field_dsk_read, field_dsk_writ, \
-                    field_net_recv, field_net_send, \
-                    field_memory_used, field_memory_buff, field_memory_cach, field_memory_free))
-    mariadb.commit()
-    logging.debug("SQL End")
 
 # def insert_gpdb():
 #     try:
@@ -202,8 +178,8 @@ def insert_mariadb():
 
 def insert_gpdb():
     curs = greenplumdb.cursor()
-    schemaname = str(greenplum_schemanameNo1 + "." + greenplum_database_name)
-    sql = """insert into """ + schemaname + """(field_name, field_date, field_time, 
+    tablename = str( greenplum_schemanameNo1 + '.' + project + '_' + str(yearmonth))
+    sql = """insert into """ + tablename + """(field_name, field_date, field_time, 
                 field_cpu_usr, field_cpu_sys, field_cpu_idle, field_cpu_wai, field_cpu_hiq, field_cpu_siq,
                 field_dsk_read, field_dsk_writ,
                 field_net_recv, field_net_send,
@@ -234,8 +210,6 @@ def insert_gpdb():
 
 print("Let's Start!")
 
-make_greenplum_database()
-make_greenplum_schema("202107")
 #make_schema()
 
 
@@ -248,14 +222,15 @@ for i in range (1, nodecount + 1):
     #globals()['sdw{}'.format(j) + '_parsed_deli'] = open(options_write_dir + globals()['sdw{}'.format(j)] + '_parsed_01_deli', 'w')
 
 
-for file_name in os.listdir(options_read_dir):
-    if "sys." in file_name:
-        yearmonth = file_name[4:10]
-        make_greenplum_schema(yearmonth)
 
 for file_name in os.listdir(options_read_dir):
     if "sys." in file_name:
-        make_greenplum_schema(yearmonth)
+        yearmonth = file_name[4:10]
+        make_greenplum_schema_table(yearmonth)
+
+for file_name in os.listdir(options_read_dir):
+    if "sys." in file_name:
+        make_greenplum_schema_table(yearmonth)
         yearmonth = (str(file_name[4:8])) + (str(file_name[8:10]))
         date_year =  (str(file_name[4:8]))
         date_moth =  (str(file_name[8:10]))
