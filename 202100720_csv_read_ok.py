@@ -24,7 +24,7 @@ prd_options_write_dir   = '/Users/junho/Downloads/parsing/'
 ### Dev mode ###
 dev_options_read_dir    = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01/'
 #dev_options_write_dir   = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01-result/'
-dev_options_write_dir   = '/Volumes/512GB/tmp/test01-result/'
+dev_options_write_dir   = '/Users/junhopark/Downloads/tmp/test01-result/'
 ### Dev mode ### Greenplum ###
 database                = 'greenplum'
 greenplum_hostname      = "172.16.198.4"
@@ -201,7 +201,7 @@ for file_name in os.listdir(options_read_dir):
         date_moth =  (str(file_name[8:10]))
         date_day =   (str(file_name[10:12]))
         for j in range(1, nodecount + 1):
-            globals()['sdw{}'.format(j) + '_parsed'] = open(options_write_dir + globals()['sdw{}'.format(j)] + '-' + date_year + '-' + date_moth + '-' + date_day, 'w')
+            globals()['sdw{}'.format(j) + '_parsed'] = open(options_write_dir + globals()['sdw{}'.format(j)] + '-' + date_year + '-' + date_moth + '-' + date_day + ".csv", 'w')
 
         source_file = open(options_read_dir + file_name, "r")  
 
@@ -218,6 +218,8 @@ for file_name in os.listdir(options_read_dir):
 
                     field_2nd       = x[1].split()
                     field_date      = field_2nd[0]
+                    field_date      = field_date[4:6] + "-" + field_date[0:2]
+                    print(field_date)
                     field_time      = field_2nd[1]
 
                     field_3rd       = x[2].split()
@@ -263,5 +265,16 @@ for file_name in os.listdir(options_read_dir):
 
 # for j in range(1, nodecount + 1):
 #     globals()['sdw{}'.format(k) + '_parsed'].close 
+
+
+
+
+for file_name in os.listdir(dev_options_write_dir):
+    if ".csv" in file_name:
+        csvdata = csv.reader(file_name, delimiter=',')
+        for row in csvdata:
+            print(', '.join(row))
+
+
 
 print("Finished")

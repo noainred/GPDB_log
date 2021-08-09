@@ -24,7 +24,7 @@ prd_options_write_dir   = '/Users/junho/Downloads/parsing/'
 ### Dev mode ###
 dev_options_read_dir    = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01/'
 #dev_options_write_dir   = '/Users/junhopark/OneDrive/DevData/GPDB_dstat_log/test01-result/'
-dev_options_write_dir   = '/Volumes/512GB/tmp/test01-result/'
+dev_options_write_dir   = '/Users/junhopark/Downloads/tmp/test01-result/'
 ### Dev mode ### Greenplum ###
 database                = 'greenplum'
 greenplum_hostname      = "172.16.198.4"
@@ -182,86 +182,12 @@ def insert_gpdb():
 
 print("Let's Start!")
 
-make_greenplum_schema()
-
-for i in range (1, nodecount + 1):
-    globals()['sdw{}'.format(i)] = "sdw" + str((i))
-
-# for file_name in os.listdir(options_read_dir):
-#     if "sys." in file_name:
-#         yearmonth = file_name[4:10]
-#         make_greenplum_schema_table(yearmonth)
-
-for file_name in os.listdir(options_read_dir):
-    if "sys." in file_name:
-        yearmonth = file_name[4:10]
-        make_greenplum_schema_table(yearmonth)
-        yearmonth = (str(file_name[4:8])) + (str(file_name[8:10]))
-        date_year =  (str(file_name[4:8]))
-        date_moth =  (str(file_name[8:10]))
-        date_day =   (str(file_name[10:12]))
-        for j in range(1, nodecount + 1):
-            globals()['sdw{}'.format(j) + '_parsed'] = open(options_write_dir + globals()['sdw{}'.format(j)] + '-' + date_year + '-' + date_moth + '-' + date_day, 'w')
-
-        source_file = open(options_read_dir + file_name, "r")  
-
-        print(source_file)
-        
-        for data in source_file:
-            for k in range(1, nodecount + 1):
-                if globals()['sdw{}'.format(k)] in data:
-                    x = []
-                    x = (data.split('|'))
-                    field_1st       = x[0].split()
-                    field_name      = field_1st[0][1:-1]
+for file_name in os.listdir(dev_options_write_dir):
+    if ".csv" in file_name:
+        csvdata = csv.reader(file_name, delimiter=',')
+        for row in csvdata:
+            print(csvdata)
 
 
-                    field_2nd       = x[1].split()
-                    field_date      = field_2nd[0]
-                    field_time      = field_2nd[1]
-
-                    field_3rd       = x[2].split()
-                    field_cpu_usr   = (field_3rd[0])
-                    field_cpu_sys   = (field_3rd[1])
-                    field_cpu_idle  = (field_3rd[2])
-                    field_cpu_wai   = (field_3rd[3])
-                    field_cpu_hiq   = (field_3rd[4])
-                    field_cpu_siq   = (field_3rd[5])
-
-                    field_4th       = x[3].split()
-                    field_dsk_read  = incloud_x(str(field_4th[0]))
-                    field_dsk_writ  = incloud_x(str(field_4th[1]))
-                
-                    field_5th = x[4].split()
-                    field_net_recv  = field_5th[0]
-                    field_net_recv  = incloud_x(str(field_5th[0]))
-                    field_net_send  = incloud_x(str(field_5th[1]))
-
-                    field_6th = x[5].split()
-                    field_memory_used   = incloud_x(str(field_6th[0]))
-                    field_memory_buff   = incloud_x(str(field_6th[1]))
-                    field_memory_cach   = incloud_x(str(field_6th[2]))
-                    field_memory_free   = incloud_x(str(field_6th[3]))
-
-                    writedata = field_name + "," + field_date + "," + field_time + "," \
-                    + field_cpu_usr + "," + field_cpu_sys + "," + field_cpu_idle + "," + field_cpu_wai + ',' + field_cpu_hiq + "," + field_cpu_siq + ","  \
-                    + field_dsk_read + "," + field_dsk_writ  + "," \
-                    + field_net_recv + "," + field_net_send + "," \
-                    + field_memory_used + "," + field_memory_buff + "," + field_memory_cach + "," + field_memory_free + "\n"
-
-                    
-                    #print("Data: " + date_year + "-" + date_moth + "-" + date_day + '-' + field_name)
-                    
-                    globals()['sdw{}'.format(k) + '_parsed'].writelines(writedata)
-
-                    # writefilename = open((options_write_dir +  date_year + "-" + date_moth + "-" + date_day + '-' + field_name) + ".log", 'w')
-                    # writefilename.writelines(writedata)
-
-
-                    #insert_mariadb()                    
-                    #insert_gpdb()
-
-# for j in range(1, nodecount + 1):
-#     globals()['sdw{}'.format(k) + '_parsed'].close 
 
 print("Finished")
