@@ -7,8 +7,6 @@ import sys
 import psycopg2
 import socket
 
-new = newlist[]
-
 dev_name = "JunHoui-MacBookPro.local"
 prd_name = "lesa"
 ppp = "-"
@@ -28,26 +26,26 @@ dev_options_write_dir   = '/Users/junhopark/OneDrive/GitHubSync/GPDB_log/dev_dat
 ##########################################################
 
 ### Dev mode ### Greenplum ###
-database                = 'greenplum'
-greenplum_hostname      = "172.16.198.4"
-#greenplum_hostname      = "localhost"
-greenplum_port_no       = "5432"
-greenplum_user_name     = "postgres"
-greenplum_user_pass     = "pivotal"
-greenplum_database_name = 'infralogdb'
-greenplum_schemanameNo1 = "sbp_gpdb"
-greenplum_tablenameNo1  = "oss"
+dev_database                = 'greenplum'
+dev_greenplum_hostname      = "172.16.198.4"
+#dev_greenplum_hostname      = "localhost"
+dev_greenplum_port_no       = "5432"
+dev_greenplum_user_name     = "postgres"
+dev_greenplum_user_pass     = "pivotal"
+dev_greenplum_database_name = 'infralogdb'
+dev_greenplum_schemanameNo1 = "sbp_gpdb"
+dev_greenplum_tablenameNo1  = "oss"
 ####################################################################################
 ### PRD mode ### Greenplum ###
-database                = 'greenplum'
-greenplum_hostname      = "172.16.198.4"
-#greenplum_hostname      = "localhost"
-greenplum_port_no       = "5432"
-greenplum_user_name     = "postgres"
-greenplum_user_pass     = "pivotal"
-greenplum_database_name = 'infralogdb'
-greenplum_schemanameNo1 = "sbp_gpdb"
-greenplum_tablenameNo1  = "oss"
+prd_database                = 'greenplum'
+prd_greenplum_hostname      = "172.16.198.4"
+#prd_greenplum_hostname      = "localhost"
+prd_greenplum_port_no       = "5432"
+prd_greenplum_user_name     = "postgres"
+prd_greenplum_user_pass     = "pivotal"
+prd_greenplum_database_name = 'infralogdb'
+prd_greenplum_schemanameNo1 = "sbp_gpdb"
+prd_greenplum_tablenameNo1  = "oss"
 ####################################################################################
 
 def current_hostname():
@@ -61,12 +59,32 @@ try:
         mode = "dev_mode"
         options_read_dir    = dev_options_read_dir
         options_write_dir   = dev_options_write_dir
+        # database
+        run_database                = dev_database
+        run_greenplum_hostname      = dev_greenplum_hostname
+        run_greenplum_port_no       = dev_greenplum_port_no
+        run_greenplum_user_name     = dev_greenplum_user_name
+        run_greenplum_user_pass     = dev_greenplum_user_pass
+        run_greenplum_database_name = dev_greenplum_database_name
+        run_greenplum_schemanameNo1 = dev_greenplum_schemanameNo1
+        run_greenplum_tablenameNo1  = dev_greenplum_tablenameNo1
+        
         print(mode)
 
     elif prd_name is hostname:
         mode = "prd_mode"
         options_read_dir    = prd_options_read_dir
         options_write_dir   = prd_options_write_dir
+
+        # database
+        run_database                = prd_database
+        run_greenplum_hostname      = prd_greenplum_hostname
+        run_greenplum_port_no       = prd_greenplum_port_no
+        run_greenplum_user_name     = prd_greenplum_user_name
+        run_greenplum_user_pass     = prd_greenplum_user_pass
+        run_greenplum_database_name = prd_greenplum_database_name
+        run_greenplum_schemanameNo1 = prd_greenplum_schemanameNo1
+        run_greenplum_tablenameNo1  = prd_greenplum_tablenameNo1
         print(mode)
 
     else:
@@ -96,6 +114,9 @@ for file_name in os.listdir(options_read_dir):
                     #print("")
                     pass
 
+with open('some.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(someiterable)
 
             
             
